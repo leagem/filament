@@ -115,8 +115,6 @@ int main(int argc, char** argv) {
                     .displayManager(dm.get())
                     .title(config.title)
                     .backend(config.backend)
-                    .configDisplayManager(
-                            static_cast<FilamentApp2::DisplayManager>(config.displayManager))
                     .setup(setup)
                     .cleanup(cleanup)
                     .preRender([](Engine*, View*, Scene*, Renderer* renderer) {
