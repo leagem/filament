@@ -175,6 +175,7 @@ void VulkanExternalImageManager::bindExternallySampledTexture(
         .conversion = imageData.conversion,
     });
 
+    clearTextureBinding(set, bindingPoint);
     mSetBindings.push_back({ bindingPoint, imageData.image, set, sampler });
 }
 
