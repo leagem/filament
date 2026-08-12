@@ -50,8 +50,6 @@ DracoMesh* DracoCache::findOrCreateMesh(const cgltf_buffer_view* key) {
     return mesh;
 }
 
-DracoMesh::DracoMesh(struct DracoMeshDetails* details) : mDetails(details) {}
-
 #if GLTFIO_DRACO_SUPPORTED
 
 struct DracoMeshDetails {
@@ -59,6 +57,8 @@ struct DracoMeshDetails {
     vector<unique_ptr<cgltf_buffer_view>> views;
     vector<unique_ptr<cgltf_buffer>> buffers;
 };
+
+DracoMesh::DracoMesh(struct DracoMeshDetails* details) : mDetails(details) {}
 
 DracoMesh::~DracoMesh() {
     for (auto& buffer : mDetails->buffers) {

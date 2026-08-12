@@ -109,7 +109,26 @@ static std::string getNodeName(cgltf_node const* node, char const* defaultNodeNa
 
     std::string strEscaped;
     size_t cur = 0, idx = 0;
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    // std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    auto conv_to_bytes = [](char32_t cp) -> std::string {
+        std::string out;
+        if (cp <= 0x7F) {
+            out += static_cast<char>(cp);
+        } else if (cp <= 0x7FF) {
+            out += static_cast<char>(0xC0 | ((cp >> 6) & 0x1F));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        } else if (cp <= 0xFFFF) {
+            out += static_cast<char>(0xE0 | ((cp >> 12) & 0x0F));
+            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        } else if (cp <= 0x10FFFF) {
+            out += static_cast<char>(0xF0 | ((cp >> 18) & 0x07));
+            out += static_cast<char>(0x80 | ((cp >> 12) & 0x3F));
+            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+            out += static_cast<char>(0x80 | (cp & 0x3F));
+        }
+        return out;
+    };
 
     auto const addUnencodedSubstr = [&](size_t cursor, size_t nextPoint) {
         assert_invariant(nextPoint >= cursor);
@@ -136,7 +155,7 @@ static std::string getNodeName(cgltf_node const* node, char const* defaultNodeNa
 
         addUnencodedSubstr(cur, idx);
 
-        strEscaped += conv.to_bytes((char32_t) std::stoul(hexStr, nullptr, 16));
+        strEscaped += conv_to_bytes((char32_t) std::stoul(hexStr, nullptr, 16));
         cur = idx + 6;
     }
     addUnencodedSubstr(cur, strOrig.length());
